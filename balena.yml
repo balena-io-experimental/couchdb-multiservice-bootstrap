@@ -2,11 +2,11 @@ name: balenaCouchDB
 type: sw.application
 description: >-
   Run a couchDB on balena to simulate high data volume.
-# assets:
-#   repository:
-#     type: blob.asset
-#     data:
-#       url: 'https://github.com/balenalabs/balena-sound'
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/balena-io-playground/couchdb-multiservice-bootstrap.git'
 #   logo:
 #     type: blob.asset
 #     data:
@@ -20,4 +20,4 @@ data:
   defaultDeviceType: intel-nuc
   supportedDeviceTypes:
     - intel-nuc
-version: 1.0.2
+version: 1.0.3
