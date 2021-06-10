@@ -1,0 +1,42 @@
+version: "2.1"
+volumes:
+    couchdb-data:
+services:
+    database:
+        image: couchdb:latest
+        volumes: 
+            - 'couchdb-data:/opt/couchdb/data'
+        ports: 
+            - 5984:5984
+        environment: 
+            COUCHDB_USER: admin
+            COUCHDB_PASSWORD: admin
+            COUCHDB_DBNAME: replacerdb 
+        networks:
+            default:
+                aliases:
+                    - database.local
+    bootstrap:
+        build:
+            context: ./bootstrap
+            dockerfile: Dockerfile.template
+        environment: 
+            COUCHDB_USER: admin
+            COUCHDB_PASSWORD: admin
+            COUCHDB_DBNAME: replacerdb 
+        depends_on: 
+            - database
+        restart: "no"
+
+    replacer:
+        build: 
+            context: ./replacer
+            dockerfile: Dockerfile.template
+        ports: 
+            - 80:80
+        environment: 
+            COUCHDB_USER: admin
+            COUCHDB_PASSWORD: admin
+            COUCHDB_DBNAME: replacerdb 
+        depends_on: 
+                - bootstrap

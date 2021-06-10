@@ -34,3 +34,4 @@
 /package-lock.json
 /resinrc.yml
 /tmp/
+**/node_modules
