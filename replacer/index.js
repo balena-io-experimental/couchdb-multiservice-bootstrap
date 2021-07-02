@@ -4,55 +4,33 @@ const app = express();
 const dbstring = "http://" + process.env.COUCHDB_USER + ":" + process.env.COUCHDB_PASSWORD + "@database.local:5984";
 const nano = require('nano')(dbstring);
 
-app.get('/', (req, res) => {
-    res.send('This is the frontend root\n');
-});
-
 app.listen(80, () => {
     console.log('Started frontend');
 });
 
-app.get('/imsohappy/:happy', (req, res) => {
-    writeDataToDB(req.params.happy);
-    res.sendStatus(200);
-});
+const upstreamDB = nano.use(process.env.COUCHDB_UPSTREAM_DBNAME);
 
+const downstreamDB = nano.use(process.env.COUCHDB_DOWNSTREAM_DBNAME);
 
-app.get('/metrics/howHappy', async (req, res) => {
-
-    res.json(await readHappyValue());
-});
-
-const replacerDB = nano.use(process.env.COUCHDB_DBNAME);
-
-replacerDB.insert(
+upstreamDB.insert(
     {
         "_id": "_design/metrics",
         "views":
         {
-            "howHappy":
+            "enrgUse":
             {
                 "map": function (doc) {
-                    if (doc.happy) {
-                        emit(doc.happy, 1);
-                    }
+                    encodeURIComponent(doc._id, doc.metrics.enrgUse)
                 },
                 "reduce": function (keys, values) {
                     return sum(values);
                 }
             }
         }
-    });
+    }).catch()
 
-
-const writeDataToDB = async (amIHappy) => {
-    console.log(`Happy value: ${amIHappy}`)
-    await replacerDB.insert({ happy: amIHappy }, 'id' + Date.now())
-}
-
-
-const readHappyValue = async () => {
-    const body = await replacerDB.view('metrics', 'howHappy', { group: true })
+const readIoTMetrics = async () => {
+    const body = await upstreamDB.view('metrics', 'enrgUse', { group: false })
     body.rows.forEach((doc) => {
         console.log(doc.value)
     })
@@ -67,9 +45,32 @@ const readHappyValue = async () => {
     return { newRows };
 }
 
+const writeDataToDB = async (metrics) => {
+    console.log(`IOT Metrics: ${JSON.stringify(metrics)}`)
+    await upstreamDB.insert({ metrics: metrics, deviceuuid: process.env.BALENA_DEVICE_UUID }, 'id' + Date.now())
+}
 
-setInterval(writeDataToDB, 1000, "yes");
-setInterval(writeDataToDB, 2000, "no");
-setInterval(writeDataToDB, 2100, "again");
 
-setInterval(readHappyValue, 5000);
+const readConfig = async () => {
+
+    const doclist = await downstreamDB.list()
+    doclist.rows.forEach(async (doc) => {
+        console.log(await downstreamDB.get(doc.id))
+    });
+}
+
+
+app.post('/iotMetric', (req, res) => {
+    console.log(req.body)
+    writeDataToDB(req.body);
+    res.sendStatus(200);
+});
+
+// { "temperatur": 27, "enrgUse": 2 , "cpu": 0.8 }
+// setInterval(writeDataToDB, 1000, { "temperatur": 27 * Math.random(), "enrgUse": 2 * Math.random(), "cpu": Math.random(), });
+// setInterval(writeDataToDB, 2000, { "temperatur": 27 * Math.random(), "enrgUse": 2 * Math.random(), "cpu": Math.random(), });
+// setInterval(writeDataToDB, 2100, { "temperatur": 27 * Math.random(), "enrgUse": 2 * Math.random(), "cpu": Math.random(), });
+
+// setInterval(readIoTMetrics, 5000);
+
+setInterval(readConfig, 5000);

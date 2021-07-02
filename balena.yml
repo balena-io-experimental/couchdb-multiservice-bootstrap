@@ -20,4 +20,4 @@ data:
   defaultDeviceType: intel-nuc
   supportedDeviceTypes:
     - intel-nuc
-version: 1.0.3
+version: 1.0.21

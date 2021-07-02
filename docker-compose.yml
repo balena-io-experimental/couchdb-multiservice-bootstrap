@@ -8,10 +8,12 @@ services:
             - 'couchdb-data:/opt/couchdb/data'
         ports: 
             - 5984:5984
+            - 80:5984
         environment: 
             COUCHDB_USER: admin
             COUCHDB_PASSWORD: admin
-            COUCHDB_DBNAME: replacerdb 
+            COUCHDB_UPSTREAM_DBNAME: iotdata 
+            COUCHDB_DOWNSTREAM_DBNAME: globalconfig 
         networks:
             default:
                 aliases:
@@ -23,7 +25,8 @@ services:
         environment: 
             COUCHDB_USER: admin
             COUCHDB_PASSWORD: admin
-            COUCHDB_DBNAME: replacerdb 
+            COUCHDB_UPSTREAM_DBNAME: iotdata 
+            COUCHDB_DOWNSTREAM_DBNAME: globalconfig 
         depends_on: 
             - database
         restart: "no"
@@ -33,10 +36,11 @@ services:
             context: ./replacer
             dockerfile: Dockerfile.template
         ports: 
-            - 80:80
+            - 90:80
         environment: 
             COUCHDB_USER: admin
             COUCHDB_PASSWORD: admin
-            COUCHDB_DBNAME: replacerdb 
+            COUCHDB_UPSTREAM_DBNAME: iotdata 
+            COUCHDB_DOWNSTREAM_DBNAME: globalconfig 
         depends_on: 
                 - bootstrap
