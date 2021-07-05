@@ -14,10 +14,9 @@ assets:
 #         https://raw.githubusercontent.com/balenalabs/balena-sound/master/logo.png
 data:
   applicationEnvironmentVariables:
-    - COUCHDB_USER: admin
-    - COUCHDB_PASSWORD: admin
-    - COUCHDB_DBNAME: replacerdb 
+    - FOOBAR: BARFOO
+    - JOHN: DOW
   defaultDeviceType: intel-nuc
   supportedDeviceTypes:
     - intel-nuc
-version: 1.0.21
+version: 1.0.22
