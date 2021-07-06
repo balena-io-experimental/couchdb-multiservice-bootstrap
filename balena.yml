@@ -6,17 +6,12 @@ assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/balena-io-playground/couchdb-multiservice-bootstrap.git'
-#   logo:
-#     type: blob.asset
-#     data:
-#       url: >-
-#         https://raw.githubusercontent.com/balenalabs/balena-sound/master/logo.png
+      url: 'https://github.com/balena-io-playground/couchdb-multiservice-bootstrap'
 data:
   applicationEnvironmentVariables:
-    - FOOBAR: BARFOO
-    - JOHN: DOW
+    - FOOBAR: 'BARFOO'
+    - JOHN: 'DOW'
   defaultDeviceType: intel-nuc
   supportedDeviceTypes:
     - intel-nuc
-version: 1.0.22
+version: 1.0.24
